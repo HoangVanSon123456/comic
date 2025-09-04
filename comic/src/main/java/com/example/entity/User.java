@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "first_name", nullable = true)
     private String firstName;
@@ -27,21 +28,23 @@ public class User {
     private String lastName;
 
     @Column(nullable = false, unique = true)
-    @ValidEmail
+//    @ValidEmail
     private String email;
 
-    @ValidPassword
+//    @ValidPassword
     private String password;
 
     private String isLock;
 
     private String avatar;
 
+    @CreationTimestamp
     @Column(name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @CreationTimestamp
     @Column(name = "updated_at", nullable = false, updatable = true)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
 
 }
