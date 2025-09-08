@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        String token = tokenProvider.generateToken(user);
+        String token = tokenProvider.generateToken(user.getEmail());
 
         return new LoginResponse(token);
     }

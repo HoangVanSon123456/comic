@@ -1,8 +1,9 @@
 package com.example.service.impl;
 
 import com.example.dto.request.RoleDTO;
+import com.example.dto.response.IdResponse;
 import com.example.entity.Role;
-import com.example.entity.User;
+import com.example.mapper.RoleMapper;
 import com.example.repository.RoleRepository;
 import com.example.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -15,18 +16,22 @@ import java.util.List;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
+    private final RoleMapper roleMapper;
 
     @Override
-    public void save(RoleDTO roleDTO) {
+    public IdResponse save(RoleDTO roleDTO) {
         Role role = Role.builder()
                 .code(roleDTO.getCode())
                 .name(roleDTO.getName())
                 .build();
         roleRepository.save(role);
+        return IdResponse.builder().
+                id(role.getId()).
+                build();
     }
 
     @Override
-    public void edit(RoleDTO roleDTO) {
+    public IdResponse edit(RoleDTO roleDTO) {
         Role role = roleRepository.findById(roleDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Role not found with id: " + roleDTO.getId()));
         if (role != null) {
@@ -34,6 +39,9 @@ public class RoleServiceImpl implements RoleService {
             role.setName(roleDTO.getName());
             roleRepository.save(role);
         }
+        return IdResponse.builder().
+                id(role.getId()).
+                build();
     }
 
     @Override
@@ -47,11 +55,16 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO findById(Integer id) {
-        return null;
+        return roleRepository.findById(id)
+                .map(roleMapper::toDTO)
+                .orElseThrow(() -> new RuntimeException("Role not found with id: " + id));
     }
 
     @Override
     public List<RoleDTO> findAll() {
-        return List.of();
+        return roleRepository.findAll()
+                .stream()
+                .map(roleMapper::toDTO)
+                .toList();
     }
 }

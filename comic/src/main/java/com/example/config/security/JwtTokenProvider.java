@@ -26,12 +26,12 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
-    public String generateToken(User user) {
+    public String generateToken(String email) {
        try {
            JWSSigner signer = new MACSigner(jwtSecret.getBytes());
 
            JWTClaimsSet claims = new JWTClaimsSet.Builder()
-                   .subject(user.getId().toString())
+                   .subject(email)
                    .issuer("example.com")
                    .expirationTime(new java.util.Date(System.currentTimeMillis() + jwtExpirationMs))
                    .issueTime(new java.util.Date())
