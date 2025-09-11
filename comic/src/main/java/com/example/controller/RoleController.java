@@ -3,9 +3,14 @@ package com.example.controller;
 import com.example.dto.request.RoleDTO;
 import com.example.dto.response.BaseResponse;
 import com.example.dto.response.IdResponse;
+import com.example.dto.response.PageResponse;
 import com.example.service.RoleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -42,4 +47,34 @@ public class RoleController {
                 .data(roleDTO)
                 .build();
     }
+
+    @DeleteMapping("/{id}")
+    public BaseResponse<Void> deleteRole(@RequestParam Integer id) {
+        roleService.delete(id);
+        return BaseResponse.<Void>builder()
+                .status(200)
+                .message("Success")
+                .build();
+    }
+
+    @GetMapping
+    public PageResponse<Page<RoleDTO>> getRoles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Page<RoleDTO> roles = roleService.findAll(PageRequest.of(page, size));
+        return PageResponse.<Page<RoleDTO>>builder()
+                .status(200)
+                .message("Success")
+                .data(PageResponse.PageContent.<Page<RoleDTO>>builder()
+                        .page(roles.getNumber())
+                        .size(roles.getSize())
+                        .totalElements(roles.getTotalElements())
+                        .totalPages(roles.getTotalPages())
+                        .last(roles.isLast())
+                        .content(roles)
+                        .build())
+                .build();
+    }
+
 }
