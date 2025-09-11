@@ -5,11 +5,6 @@ import com.example.entity.Role;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface RoleMapper extends  GenericMapper<RoleDTO , Role> {
-    @Override
-    RoleDTO toDTO(Role entity);
-
-    @Override
-    Role toEntity(RoleDTO dto);
+public abstract class RoleMapper extends BaseMapper<RoleDTO, Role> {
 
 }

@@ -1,5 +1,6 @@
 package com.example.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,12 +21,16 @@ public class PageResponse<T> {
     @NoArgsConstructor
     @Builder
     public static class PageContent<T> {
+        private T content;
         private int page;
         private int size;
         private long totalElements;
         private int totalPages;
-        private boolean last;
-        private T content;
+        @JsonProperty("numberOfElements")
+        private int numberOfElements;
+        @JsonProperty("sort")
+        private String sort;
+
     }
 
 }

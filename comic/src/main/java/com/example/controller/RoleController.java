@@ -5,9 +5,11 @@ import com.example.dto.response.BaseResponse;
 import com.example.dto.response.IdResponse;
 import com.example.dto.response.PageResponse;
 import com.example.service.RoleService;
+import com.example.utils.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,23 +60,17 @@ public class RoleController {
     }
 
     @GetMapping
-    public PageResponse<Page<RoleDTO>> getRoles(
+    public PageResponse<List<RoleDTO>> getRoles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
+
         Page<RoleDTO> roles = roleService.findAll(PageRequest.of(page, size));
-        return PageResponse.<Page<RoleDTO>>builder()
-                .status(200)
-                .message("Success")
-                .data(PageResponse.PageContent.<Page<RoleDTO>>builder()
-                        .page(roles.getNumber())
-                        .size(roles.getSize())
-                        .totalElements(roles.getTotalElements())
-                        .totalPages(roles.getTotalPages())
-                        .last(roles.isLast())
-                        .content(roles)
-                        .build())
-                .build();
+        return PaginationUtil.buildPaginatedResponse(
+                roles,
+                200,
+                "Thành công!"
+        );
     }
 
 }
