@@ -59,7 +59,7 @@ public class RoleController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping()
     public PageResponse<List<RoleDTO>> getRoles(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size

@@ -1,5 +1,6 @@
 package com.example.config.security;
 
+import com.example.exception.global.TokenException;
 import com.example.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,22 +25,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt = getJwtFromRequest(request);
+        try {
+            if (jwt != null && tokenProvider.validateToken(jwt)) {
+                String email = tokenProvider.getEmailFromToken(jwt);
 
-        if (jwt != null && tokenProvider.validateToken(jwt)) {
-            String email = tokenProvider.getEmailFromToken(jwt);
+                var userDetails = userDetailsService.loadUserByUsername(email);
 
-            var userDetails = userDetailsService.loadUserByUsername(email);
+                var authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities()
+                );
 
-            var authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities()
-            );
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            throw new TokenException("Token is expired");
         }
 
-        filterChain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
